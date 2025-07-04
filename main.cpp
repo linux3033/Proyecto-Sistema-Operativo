@@ -33,7 +33,7 @@ void crearNcopias(int N) {
         cout<< "se creo: " << nombreArchivo << endl;
     }
 }
-
+/*
 string encriptarTexto(string texto) {
     string resultado;
 
@@ -45,7 +45,8 @@ string encriptarTexto(string texto) {
 
         }
     }
-}
+} falta
+*/
 int main() {
     int Ncopias; // N copias del usuario
     cout << "Ingrese el numero de copias que desea: " << endl;
