@@ -1,5 +1,5 @@
 # Proyecto-Sistema-Operativo
-## Proyecto de Sistema Operativos manejo de archivos y encriptación 
+Realizado por: Ariana Fernández y Karla Ramos
 Tener devC++ 5.11 y tener configurado el language standard como: GNU C++11 
 1. Primero creamos n copias. 
 2. Encriptamos los archivos de las n copias, utilizando el cifrado de césar y para los números sus simétricos. 
