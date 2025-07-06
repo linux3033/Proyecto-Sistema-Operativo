@@ -116,7 +116,9 @@ string sha256(const string& input) {
     return ss.str();
 }
 
+//=====================================================
 // CIFRAR UN SOLO CARÁCTER
+//=====================================================
 
 char cifrarCaracter(char c) {
     if (isalpha(c)) {
@@ -129,7 +131,9 @@ char cifrarCaracter(char c) {
     return c;
 }
 
+//=====================================================
 // CREAR N COPIAS DESDE original.txt
+//=====================================================
 
 void crearNcopias(int N, double& tiempoTotalCreacion) {
     auto inicioTotal = high_resolution_clock::now();
@@ -160,7 +164,7 @@ void crearNcopias(int N, double& tiempoTotalCreacion) {
         
         auto fin = high_resolution_clock::now();
         duration<double> duracion = fin - inicio;
-        cout << "Se creo: " << nombreArchivo << " en " << duracion.count() << " segundos" << endl;
+        cout << "Se creó: " << nombreArchivo << " en " << duracion.count() << " segundos" << endl;
     }
     
     auto finTotal = high_resolution_clock::now();
@@ -168,6 +172,7 @@ void crearNcopias(int N, double& tiempoTotalCreacion) {
     tiempoTotalCreacion = duracionTotal.count();
 }
 
+// ---------------------------------------------
 // CIFRAR ARCHIVO Y SOBREESCRIBIRLO
 
 void cifrarArchivo(const string& nombreArchivo, double& tiempoCifrado) {
@@ -203,6 +208,7 @@ void cifrarArchivo(const string& nombreArchivo, double& tiempoCifrado) {
     cout << "Cifrado: " << nombreArchivo << " en " << tiempoCifrado << " segundos" << endl;
 }
 
+// ---------------------------------------------
 // GENERAR HASH Y GUARDAR EN .sha
 
 void generarHashDeArchivo(const string& nombreArchivo, double& tiempoHash) {
@@ -242,7 +248,7 @@ void validarArchivoConHash(const string& nombreArchivo, double& tiempoValidacion
     // Paso 1: Leer archivo cifrado y calcular hash actual
     ifstream archivo(nombreArchivo);
     if (!archivo.is_open()) {
-        cout << "Error al abrir " << nombreArchivo << " para validacion" << endl;
+        cout << "Error al abrir " << nombreArchivo << " para validación" << endl;
         return;
     }
 
@@ -265,16 +271,16 @@ void validarArchivoConHash(const string& nombreArchivo, double& tiempoValidacion
 
     // Paso 3: Comparar ambos hashes
     if (hashActual == hashGuardado) {
-        cout << " VALIDACION EXITOSA: " << nombreArchivo << " no ha sido modificado." << endl;
+        cout << "? VALIDACIÓN EXITOSA: " << nombreArchivo << " no ha sido modificado." << endl;
     } else {
-        cout << " ERROR: El contenido de " << nombreArchivo << " ha sido alterado." << endl;
+        cout << "? ERROR: El contenido de " << nombreArchivo << " ha sido alterado." << endl;
     }
     
     auto fin = high_resolution_clock::now();
     duration<double> duracion = fin - inicio;
     tiempoValidacion = duracion.count();
     
-    cout << "Validacion de " << nombreArchivo << " completada en " << tiempoValidacion << " segundos" << endl;
+    cout << "Validación de " << nombreArchivo << " completada en " << tiempoValidacion << " segundos" << endl;
 }
 
 char descifrarCaracter(char c) {
@@ -341,7 +347,7 @@ void compararConOriginal(const string& nombreDesencriptado, double& tiempoCompar
 
     while (getline(archivoOriginal, lineaOriginal) && getline(archivoDesencriptado, lineaDesencriptada)) {
         if (lineaOriginal != lineaDesencriptada) {
-            cout << "Diferencia en línea " << linea << ": " << endl;
+            cout << "? Diferencia en línea " << linea << ": " << endl;
             cout << "Original:     " << lineaOriginal << endl;
             cout << "Desencriptado:" << lineaDesencriptada << endl;
             iguales = false;
@@ -351,12 +357,12 @@ void compararConOriginal(const string& nombreDesencriptado, double& tiempoCompar
 
     // Verifica si uno tiene más líneas que el otro
     if ((getline(archivoOriginal, lineaOriginal)) || (getline(archivoDesencriptado, lineaDesencriptada))) {
-        cout << " Los archivos tienen diferente número de líneas." << endl;
+        cout << "? Los archivos tienen diferente número de líneas." << endl;
         iguales = false;
     }
 
     if (iguales) {
-        cout << " " << nombreDesencriptado << " es igual a original.txt" << endl;
+        cout << "? " << nombreDesencriptado << " es igual a original.txt" << endl;
     }
 
     archivoOriginal.close();
@@ -366,29 +372,19 @@ void compararConOriginal(const string& nombreDesencriptado, double& tiempoCompar
     duration<double> duracion = fin - inicio;
     tiempoComparacion = duracion.count();
     
-    cout << "Comparacion de " << nombreDesencriptado << " completada en " << tiempoComparacion << " segundos" << endl;
+    cout << "Comparación de " << nombreDesencriptado << " completada en " << tiempoComparacion << " segundos" << endl;
 }
 
 // Función para obtener la fecha y hora actual formateada
-
-struct TiemposArchivo {
-    string nombre;
-    system_clock::time_point inicio;
-    system_clock::time_point fin;
-    double tiempoProcesamiento;
-};
-
-vector<TiemposArchivo> tiemposArchivos;
-mutex mtx_tiempos;
-atomic<int> archivosCompletados(0);
-
-// ================== FUNCIÓN PARA OBTENER FECHA FORMATEADA ==================
 string obtenerFechaHora() {
-    auto now = system_clock::now();
-    time_t now_time = system_clock::to_time_t(now);
-    char buffer[80];
-    strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", localtime(&now_time));
-    return string(buffer);
+    auto ahora = system_clock::now();
+    time_t tiempo = system_clock::to_time_t(ahora);
+    string str = ctime(&tiempo);
+    // Eliminar el salto de línea que añade ctime
+    if (!str.empty() && str[str.length()-1] == '\n') {
+        str.erase(str.length()-1);
+    }
+    return str;
 }
 
 
@@ -396,14 +392,69 @@ string obtenerFechaHora() {
 
 //OPTIMIZADO-------------------------------------
 
+
+void crearNcopiasop(int N, double& tiempoTotalCreacion) {
+    auto inicioTotal = high_resolution_clock::now();
+    
+    ifstream archivoOriginal("original.txt");
+    if (!archivoOriginal.is_open()) {
+        cout << "Error al abrir original.txt" << endl;
+        return;
+    }
+
+    string texto = "", linea;
+    while (getline(archivoOriginal, linea)) {
+        texto += linea + "\n";
+    }
+    archivoOriginal.close();
+
+    for (int i = 1; i <= N; ++i) {
+        auto inicio = high_resolution_clock::now();
+        
+        string nombreArchivo = to_string(i) + "op.txt";
+        ofstream copia(nombreArchivo);
+        if (!copia.is_open()) {
+            cout << "Error creando " << nombreArchivo << endl;
+            continue;
+        }
+        copia << texto;
+        copia.close();
+        
+        auto fin = high_resolution_clock::now();
+        duration<double> duracion = fin - inicio;
+        cout << "Se creó: " << nombreArchivo << " en " << duracion.count() << " segundos" << endl;
+    }
+    
+    auto finTotal = high_resolution_clock::now();
+    duration<double> duracionTotal = finTotal - inicioTotal;
+    tiempoTotalCreacion = duracionTotal.count();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 mutex mtx_cout; // Para sincronizar salida a consola
 atomic<int> archivos_procesados(0);
 
-void procesarArchivo(int i) {
-    string nombreOriginal = to_string(i) + "op.txt";
-    string nombreCifrado = to_string(i) + "_openc.txt";
-    string nombreDescifrado = to_string(i) + "_opdec.txt";
-    string nombreHash = to_string(i) + ".sha";
+void procesarArchivoop(int i) {
+    string nombreOriginal = to_string(i) + ".txt";
+    string nombreCifrado = to_string(i) + "op_enc.txt";
+    string nombreDescifrado = to_string(i) + "op_dec.txt";
+    string nombreHash = to_string(i) + "op.sha";
 
     auto inicio = high_resolution_clock::now();
     
@@ -477,12 +528,15 @@ void procesarArchivo(int i) {
     
  lock_guard<mutex> lock(mtx_cout);
         cout << "Procesado " << nombreOriginal << " en " << fixed << setprecision(3) << tiempo << "s\n";
-        cout << "  Hash valido: " << (hashValido ? "SÍ" : "NO") << endl;
+        cout << "  Hash válido: " << (hashValido ? "SÍ" : "NO") << endl;
         cout << "  Descifrado correcto: " << (contenidoValido ? "SÍ" : "NO") << endl;
     }
 
     archivos_procesados++;
 }
+
+
+
 
 
 // ---------------------------------------------
@@ -493,14 +547,14 @@ int main() {
 	//PROCESO BASEEEEEEEEEEEE
     // Mostrar hora de inicio
     string inicioProceso = obtenerFechaHora();
-    cout << "PROCESO BASE: " << inicioProceso <<endl;
+    cout << "PROCESO BASE: " << inicioProceso;
     
     int N;
-    cout << "Cuantas copias deseas crear? (max 50): ";
+    cout << "¿Cuántas copias deseas crear? (máx 50): ";
     cin >> N;
 
     if (N < 1 || N > 50) {
-        cout << "Numero invalido." << endl;
+        cout << "Número inválido." << endl;
         return 1;
     }
 
@@ -513,11 +567,11 @@ int main() {
     double tiempoTotalComparacion = 0;
     
     // Crear copias
-    cout << "\n= Creando " << N << " copias =" << endl;
+    cout << "\n=== Creando " << N << " copias ===" << endl;
     crearNcopias(N, tiempoTotalCreacion);
     
     // Cifrar archivos
-    cout << "\n= Cifrando archivos =" << endl;
+    cout << "\n=== Cifrando archivos ===" << endl;
     for (int i = 1; i <= N; ++i) {
         string nombre = to_string(i) + ".txt";
         double tiempoCifrado = 0;
@@ -526,7 +580,7 @@ int main() {
     }
     
     // Generar hashes
-    cout << "\n= Generando hashes =" << endl;
+    cout << "\n=== Generando hashes ===" << endl;
     for (int i = 1; i <= N; ++i) {
         string nombre = to_string(i) + ".txt";
         double tiempoHash = 0;
@@ -534,11 +588,11 @@ int main() {
         tiempoTotalHash += tiempoHash;
     }
 
-    cout << "\nTodo listo: copias, cifrado y hash generados..." << endl;
+    cout << "\nTodo listo: copias, cifrado y hash generados." << endl;
     system("pause");
     
     // Validar archivos
-    cout << "\n= Validando archivos =" << endl;
+    cout << "\n=== Validando archivos ===" << endl;
     for (int i = 1; i <= N; ++i) {
         string nombre = to_string(i) + ".txt";
         double tiempoValidacion = 0;
@@ -547,7 +601,7 @@ int main() {
     }
     
     // Desencriptar archivos
-    cout << "\n= Desencriptando archivos =" << endl;
+    cout << "\n=== Desencriptando archivos ===" << endl;
     for (int i = 1; i <= N; ++i) {
         string nombre = to_string(i) + ".txt";
         double tiempoDescifrado = 0;
@@ -556,7 +610,7 @@ int main() {
     }
     
     // Comparar archivos
-    cout << "\n= Comparando archivos con original =" << endl;
+    cout << "\n=== Comparando archivos con original ===" << endl;
     for (int i = 1; i <= N; ++i) {
         string nombreDesencriptado = to_string(i) + "_dec.txt";
         double tiempoComparacion = 0;
@@ -578,48 +632,49 @@ int main() {
     // Mostrar resumen de tiempos
     cout << "\n=== RESUMEN DE TIEMPOS ===" << endl;
     cout << fixed << setprecision(6);
-    cout << "Creacion de archivos: " << tiempoTotalCreacion << " segundos" << endl;
+    cout << "Creación de archivos: " << tiempoTotalCreacion << " segundos" << endl;
     cout << "Cifrado de archivos: " << tiempoTotalCifrado << " segundos (promedio: " << promedioCifrado << ")" << endl;
-    cout << "Generacion de hashes: " << tiempoTotalHash << " segundos (promedio: " << promedioHash << ")" << endl;
-    cout << "Validacion de archivos: " << tiempoTotalValidacion << " segundos (promedio: " << promedioValidacion << ")" << endl;
+    cout << "Generación de hashes: " << tiempoTotalHash << " segundos (promedio: " << promedioHash << ")" << endl;
+    cout << "Validación de archivos: " << tiempoTotalValidacion << " segundos (promedio: " << promedioValidacion << ")" << endl;
     cout << "Descifrado de archivos: " << tiempoTotalDescifrado << " segundos (promedio: " << promedioDescifrado << ")" << endl;
-    cout << "Comparacion con original: " << tiempoTotalComparacion << " segundos (promedio: " << promedioComparacion << ")" << endl;
+    cout << "Comparación con original: " << tiempoTotalComparacion << " segundos (promedio: " << promedioComparacion << ")" << endl;
     cout << "----------------------------------------" << endl;
-    cout<<endl;
     cout << "TIEMPO TOTAL DEL PROCESO: " << tiempoTotal << " segundos" << endl;
     
     // Mostrar hora de finalización
     string finProceso = obtenerFechaHora();
-    cout << "Fin del proceso: " << finProceso << endl;
+    cout << "\nFin del proceso: " << finProceso;
+    cout <<"/n";
     cout << "===============================================\n";
     cout << "===============================================\n";
-    cout<<endl;
-    system("pause");
+    cout << "===============================================\n";
+    cout << "===============================================\n";
+    cout << "===============================================\n";
+    
+    
+    
+    
     
     //PROCESO OPTIMIZADOOOO
     
+    system("pause");
     N==0;
-    cout<<endl;
-    cout<<endl;
     cout << "PROCESO OPTIMIZADO\n";
-    cout << "¿Cuántas copias deseas crear? (max 50): ";
+    cout << "===============================================\n";
+    cout << "¿Cuántas copias deseas crear? (máx 50):";
     cin >> N;
     
     if (N < 1) {
         cerr << "Error: N debe ser mayor que 0" << endl;
         return 1;
     }
-
-    // Verificar que existan los archivos originales
-    for (int i = 1; i <= N; ++i) {
-        ifstream f(to_string(i) + ".txt");
-        if (!f) {
-            cerr << "Error: No se encuentra " << i << ".txt" << endl;
-            return 1;
-        }
-    }
     
-   auto inicioTotal = high_resolution_clock::now();
+    auto inicioTotal = high_resolution_clock::now();
+    
+    // Crear copias
+    cout << "\n=== Creando " << N << " copias ===" << endl;
+    crearNcopiasop(N, tiempoTotalCreacion);
+	
     
     // Determinar número de hilos
     unsigned int numHilos = thread::hardware_concurrency();
@@ -631,7 +686,7 @@ int main() {
     for (int i = 1; i <= N; ) {
         // Lanzar un lote de hilos
         for (unsigned int t = 0; t < numHilos && i <= N; t++, i++) {
-            hilos.emplace_back(procesarArchivo, i);
+            hilos.emplace_back(procesarArchivoop, i);
         }
 
         // Esperar a que terminen los hilos del lote actual
@@ -644,7 +699,7 @@ int main() {
     auto finTotal = high_resolution_clock::now();
     double tiempoTotalopti = duration_cast<duration<double>>(finTotal - inicioTotal).count();
 	
-	cout << "\nRESUMEN FINAL:\n";
+	 cout << "\nRESUMEN FINAL:\n";
     cout << "Archivos procesados: " << archivos_procesados << endl;
     cout << fixed << setprecision(3);
     cout << "Tiempo total: " << tiempoTotalopti << " segundos\n";
